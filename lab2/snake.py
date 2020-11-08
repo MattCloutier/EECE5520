@@ -22,6 +22,7 @@ upStr = b"w\r\n"
 downStr = b"s\r\n"
 rightStr = b"d\r\n"
 leftStr = b"a\r\n"
+chngColor = b"q\r\n"
 
 delay = 0.1
 
@@ -111,16 +112,7 @@ wn.onkey(go_right, "d")
 while True:
     wn.update()
 
-    # TODO: notes by Prof. Luo
-    # you need to add your code to read control information from serial port
-    # then use that information to set head.direction
-    # For example,
-    # if control_information == 'w':
-    #     head.direction = "up"
-    # elif control_information == 's':
-    #     head.direction = "down"
-    # elif ......
-    #
+    # Read the input direction from the serial line and update direction
     control_info = ser.readline()
     if control_info != b'':
         print(control_info)
@@ -133,6 +125,9 @@ while True:
         go_down()
     elif control_info == rightStr:
         go_right()
+    elif control_info == chngColor:
+        ppa = 20
+        food.color('gold')
 
     # Check for a collision with the border
     if head.xcor()>290 or head.xcor()<-290 or head.ycor()>290 or head.ycor()<-290:
@@ -169,6 +164,7 @@ while True:
         # Move the food to a random spot
         x = random.randint(-290, 290)
         y = random.randint(-290, 290)
+        food.color('red')
         food.goto(x,y)
 
         # Add a segment
@@ -183,7 +179,10 @@ while True:
         delay -= 0.001
 
         # Increase the score
-        score += 10
+        score += ppa
+
+        # Reset the P/A
+        ppa = 10
 
         if score > high_score:
             high_score = score
